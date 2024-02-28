@@ -1,2 +1,5 @@
 # watchtower
-A malware analysis tool using python, as it is in beta stage ,recommended to use it in jupyter notebook.Users can check md5 of every process ,files they accessing realtime.
+An open tool for system inpection using python. Users can check files being accessed on realtime by each processes. New feature are coming such as checking process cheksums with virustotal api.
+Currently web based gui is used to avoid gui lagging when showing chunks of data.
+
+require python libraries such as
