@@ -1,44 +1,152 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Real-time System Info</title>
-    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Process Monitor</title>
+    <style>
+        table, th, td {
+            border: 1px solid black;
+            border-collapse: collapse;
+            padding: 5px;
+            text-align: left;
+        }
+        .connection-cell {
+            white-space: pre-wrap; /* css-3 */
+            white-space: -moz-pre-wrap; /* Mozilla, since 1999 */
+            white-space: -pre-wrap; /* Opera 4-6 */
+            white-space: -o-pre-wrap; /* Opera 7 */
+            word-wrap: break-word; /* Internet Explorer 5.5+ */
+        }
+    </style>
 </head>
 <body>
-    <div class="container">
-        <h1 class="mt-3">Real-time System Info</h1>
-        <table class="table table-striped mt-3" id="process-table">
-            <thead>
-                <tr>
-                    <th>PID</th>
-                    <th>Name</th>
-                    <th>CPU %</th>
-                    <th>Memory %</th>
-                    <th>MD5 Checksum</th>
-                    <th>Files Accessed</th>
-                </tr>
-            </thead>
-            <tbody id="process-data">
-            </tbody>
-        </table>
-    </div>
+    <h1>Process Monitor</h1>
+    <table id="processTable">
+        <thead>
+            <tr>
+                <th>UUID</th>
+                <th>PID</th>
+                <th>Name</th>
+                <th>CPU %</th>
+                <th>Memory %</th>
+                <th>Connections</th>
+                <th>Process MD5</th>
+                <th>Files Accessed</th>
+                <th>VirusTotal Result</th>
+              </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+
+    <script src="//cdnjs.cloudflare.com/ajax/libs/socket.io/4.1.3/socket.io.min.js"></script>
+    
+
 
     <script>
-        async function updateTable() {
-            const response = await fetch('/get_data');
-            const data = await response.json();
-            const tableBody = document.getElementById('process-data');
-            tableBody.innerHTML = '';
-            data.process_info.forEach(process => {
-                const { pid, name, cpu_percent, memory_percent, process_md5, files_accessed_str } = process;
-                const row = document.createElement('tr');
-                row.innerHTML = `<td>${pid}</td><td>${name}</td><td>${cpu_percent.toFixed(2)}</td><td>${memory_percent.toFixed(2)}</td><td>${process_md5 ? process_md5 : 'N/A'}</td><td>${files_accessed_str}</td>`;
-                tableBody.appendChild(row);
-            });
-        }
 
-        setInterval(updateTable, 2000);
-        updateTable();
-    </script>
+document.addEventListener('DOMContentLoaded', (event) => {
+    const socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port);
+    socket.on('connect', () => {
+      console.log('Connected to server');
+    });
+
+      
+  
+
+
+      
+    function updateProcessCells(process) {
+  console.log(`Updating process with id = ${process.id}`);
+  console.log(`Process name: ${process.name}`); // Add this line to print out the process name
+
+  const row = getProcessRowById(process.id);
+
+  if (row) {
+    // Update the existing row
+    const cpuCell = row.cells[3];
+    const memoryCell = row.cells[4];
+    const connectionsCell = row.cells[5];
+    const md5Cell = row.cells[6];
+    const filesCell = row.cells[7];
+    const virusTotalCell = row.cells[8];
+
+    cpuCell.textContent = process.cpu_percent;
+    memoryCell.textContent = process.memory_percent;
+    connectionsCell.textContent = process.connections;
+    md5Cell.textContent = process.process_md5;
+    filesCell.textContent = process.files_accessed_str;
+    virusTotalCell.textContent = process.virus_total_result;
+
+    // Update the name cell
+    const nameCell = row.cells[2];
+    console.log(`Name cell: ${nameCell}`); // Add this line to print out the name cell
+    nameCell.textContent = process.name;
+  } else {
+    // Insert a new row
+    const table = document.getElementById('processTable');
+    const tbody = table.getElementsByTagName('tbody')[0];
+    const row = tbody.insertRow();
+    row.setAttribute('id', `process-${process.id}`);
+
+    const idCell = row.insertCell();
+    idCell.textContent = process.id;
+
+    const pidCell = row.insertCell();
+    pidCell.textContent = process.pid;
+
+    const nameCell = row.insertCell();
+    console.log(`Name cell: ${nameCell}`); // Add this line to print out the name cell
+    nameCell.textContent = process.name;
+
+    const cpuCell = row.insertCell();
+    cpuCell.textContent = process.cpu_percent;
+
+    const memoryCell = row.insertCell();
+    memoryCell.textContent = process.memory_percent;
+
+    const connectionsCell = row.insertCell();
+    connectionsCell.classList.add('connection-cell'); // Add the CSS class to the cell
+    connectionsCell.textContent = process.connections;
+
+    const md5Cell = row.insertCell();
+    md5Cell.textContent = process.process_md5;
+
+    const filesCell = row.insertCell();
+    filesCell.textContent = process.files_accessed_str;
+
+    const virusTotalCell = row.insertCell();
+    virusTotalCell.textContent = process.virus_total_result;
+  }
+}
+
+function getProcessRowById(id) {
+  const table = document.getElementById('processTable');
+  const rows = table.getElementsByTagName('tbody')[0].rows;
+
+  for (let i = 0; i < rows.length; i++) {
+    const idCell = rows[i].cells[0];
+
+    if (idCell.textContent === id) {
+      return rows[i];
+    }
+  }
+}
+
+
+      
+        socket.on('new_data', (data) => {
+          data.process_info.forEach(process => {
+            updateProcessCells(process);
+          });
+        });
+
+    });
+
+      </script>
+      
+      
+      
+      
 </body>
 </html>
