@@ -10,4 +10,4 @@ main2 branch is currently active
 move index.html to templates folder,
 install flask, flask-socketIO libraries.
 
-Run the script
+Run the script wtv5.py
