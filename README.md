@@ -4,7 +4,7 @@ Currently web based gui is used to avoid gui lagging when showing chunks of data
 
 # Installation 
 
-clone https://github.com/hatgrey2/watchtower/main2/
+clone https://github.com/hatgrey2/watchtower/tree/main2/
 main2 branch is currently active
 
 move index.html to templates folder,
