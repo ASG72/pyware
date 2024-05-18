@@ -3,7 +3,7 @@ An open tool for system inpection using python. Users can check files being acce
 Currently web based gui is used to avoid gui lagging when showing chunks of data.
 
 
-#Installation
+# Installation
 
 Move index.html to templates folder
 require python libraries Flask, Flask-socketIO
