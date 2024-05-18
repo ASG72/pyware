@@ -5,9 +5,17 @@ Currently web based gui is used to avoid gui lagging when showing chunks of data
 
 # Installation
 
+git clone https://github.com/hatgrey2/watchtower.git
 
 require python libraries Flask, Flask-socketIO
-git clone https://github.com/hatgrey2/watchtower.git
+
+Conda-(Linux/windows)
+conda activate
+pip install flask
+pip install flask_socketio
+cd watchtower
+python wtv5.py
+
 run script wtv5.py
 
 <In development>
