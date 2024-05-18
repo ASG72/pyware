@@ -4,6 +4,7 @@ Currently web based gui is used to avoid gui lagging when showing chunks of data
 
 
 # Installation
+Linux update soon
 
 git clone https://github.com/hatgrey2/watchtower.git
 
@@ -16,6 +17,10 @@ conda activate
 pip install flask
 
 pip install flask_socketio
+
+pip install requets
+
+pip install psutils
 
 cd watchtower
 
