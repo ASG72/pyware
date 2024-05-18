@@ -5,7 +5,6 @@ Currently web based gui is used to avoid gui lagging when showing chunks of data
 
 # Installation
 
-Move index.html to templates folder
 require python libraries Flask, Flask-socketIO
 
 run command python wtv5.py
