@@ -22,6 +22,8 @@ def gather_system_info():
         for process in psutil.process_iter(attrs=['pid', 'name', 'cpu_percent', 'memory_percent', 'connections']):
             try:
                 pid = process.info['pid']
+                pid_bytes = str(pid).encode('utf-8')  # Convert pid to bytes using UTF-8 encoding
+                pid_hash = hashlib.md5(pid_bytes).hexdigest()
                 if pid == 0:
                     continue  # Skip the system idle process (pid=0)
                 name = process.info['name']
@@ -59,7 +61,7 @@ def gather_system_info():
                     virus_total_result = get_virustotal_report(process_md5)
 
                 new_process_info.append({
-                    'id': str(uuid.uuid4()),  # Generate a unique ID for each process
+                    'id': pid_hash,  # Generate a unique ID for each process
                     'pid': pid,
                     'name': name,
                     'cpu_percent': cpu_percent,
@@ -79,7 +81,7 @@ def gather_system_info():
             # Emit an event to the client with the new data
             socketio.emit('new_data', {'process_info': process_info})
 
-            time.sleep(2)
+            # time.sleep(2)
 
 
 
