@@ -27,12 +27,12 @@ def gather_system_info():
                 name = process.info['name']
                 cpu_percent = process.info['cpu_percent']
                 memory_percent = process.info['memory_percent']
-                # --------------------------------------------------------------connections--------------
                 connections = process.info['connections']
-                # Split the connections string into a list and join it with the <br> HTML tag
+
                 connections_str = ''
-                for conn in connections:
-                    connections_str += f"{conn}\n"
+                if connections is not None:
+                    for conn in connections:
+                        connections_str += f"{conn}\n"
 # ---------------------------------------------------------------------------------------files_accessed-------------------
                 files_accessed = []
                 files_accessed_str = ', '.join(files_accessed)
