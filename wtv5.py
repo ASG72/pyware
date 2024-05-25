@@ -98,24 +98,27 @@ def calculate_process_md5(pid):
     return None
 
 def get_virustotal_report(resource):
-    api_key = 'your_virustotal_api_key'
-    url = f"https://www.virustotal.com/api/v3/files/{resource}"
-    headers = {
-        "x-apikey": api_key,
-        "Accept": "application/json",
-    }
-    response = requests.get(url, headers=headers)
-    if response.status_code == 200:
-        data = response.json()
-        last_analysis_stats = data.get('data', {}).get('attributes', {}).get('last_analysis_stats', {})
-        malicious = last_analysis_stats.get('malicious', 0)
-        suspicious = last_analysis_stats.get('suspicious', 0)
-        undetected = last_analysis_stats.get('undetected', 0)
-        total = malicious + suspicious + undetected
-        detection_ratio = (malicious + suspicious) / total * 100
-        return detection_ratio
+    api_key = ''
+    if api_key =='':
+        return 'API not given'
     else:
-        return 'N/A'
+        url = f"https://www.virustotal.com/api/v3/files/{resource}"
+        headers = {
+            "x-apikey": api_key,
+            "Accept": "application/json",
+        }
+        response = requests.get(url, headers=headers)
+        if response.status_code == 200:
+            data = response.json()
+            last_analysis_stats = data.get('data', {}).get('attributes', {}).get('last_analysis_stats', {})
+            malicious = last_analysis_stats.get('malicious', 0)
+            suspicious = last_analysis_stats.get('suspicious', 0)
+            undetected = last_analysis_stats.get('undetected', 0)
+            total = malicious + suspicious + undetected
+            detection_ratio = (malicious + suspicious) / total * 100
+            return detection_ratio
+        else:
+            return 'N/A'
 
 @app.route('/')
 def index():
