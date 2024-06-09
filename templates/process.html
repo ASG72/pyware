@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Process Monitor</title>
+    <style>
+        table, th, td {
+            border: 1px solid black;
+            border-collapse: collapse;
+            padding: 5px;
+            text-align: left;
+        }
+        .connection-cell {
+            white-space: pre-wrap; /* css-3 */
+            white-space: -moz-pre-wrap; /* Mozilla, since 1999 */
+            white-space: -pre-wrap; /* Opera 4-6 */
+            white-space: -o-pre-wrap; /* Opera 7 */
+            word-wrap: break-word; /* Internet Explorer 5.5+ */
+        }
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <h1>Process Monitor</h1>
+    <table id="processTable">
+        <thead>
+            <tr>
+                <th class="hidden">UUID</th>
+                <th>PID</th>
+                <th>Name</th>
+                <th>CPU %</th>
+                <th>Memory %</th>
+                <th>Connections</th>
+                <th>Process MD5</th>
+                <th>Files Accessed</th>
+                <th>VirusTotal Result</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+
+    <script src="//cdnjs.cloudflare.com/ajax/libs/socket.io/4.1.3/socket.io.min.js"></script>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', (event) => {
+            const socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port);
+            socket.on('connect', () => {
+                console.log('Connected to server');
+            });
+
+            function updateProcessCells(process) {
+                console.log(`Updating process with id = ${process.id}`);
+                console.log(`Process name: ${process.name}`);
+
+                const row = getProcessRowById(process.id);
+
+                if (row) {
+                    // Update the existing row
+                    const cpuCell = row.cells[3];
+                    const memoryCell = row.cells[4];
+                    const connectionsCell = row.cells[5];
+                    const md5Cell = row.cells[6];
+                    const filesCell = row.cells[7];
+                    const virusTotalCell = row.cells[8];
+
+                    cpuCell.textContent = process.cpu_percent;
+                    memoryCell.textContent = process.memory_percent;
+                    connectionsCell.textContent = process.connections;
+                    md5Cell.textContent = process.process_md5;
+                    filesCell.textContent = process.files_accessed_str;
+                    virusTotalCell.textContent = process.virus_total_result;
+
+                    // Update the name cell
+                    const nameCell = row.cells[2];
+                    console.log(`Name cell: ${nameCell}`);
+                    nameCell.textContent = process.name;
+                } else {
+                    // Insert a new row
+                    const table = document.getElementById('processTable');
+                    const tbody = table.getElementsByTagName('tbody')[0];
+                    const row = tbody.insertRow();
+                    row.setAttribute('id', `process-${process.id}`);
+
+                    const idCell = row.insertCell();
+                    idCell.textContent = process.id;
+                    idCell.classList.add('hidden');  // Hide the UUID cell
+
+                    const pidCell = row.insertCell();
+                    pidCell.textContent = process.pid;
+
+                    const nameCell = row.insertCell();
+                    console.log(`Name cell: ${nameCell}`);
+                    nameCell.textContent = process.name;
+
+                    const cpuCell = row.insertCell();
+                    cpuCell.textContent = process.cpu_percent;
+
+                    const memoryCell = row.insertCell();
+                    memoryCell.textContent = process.memory_percent;
+
+                    const connectionsCell = row.insertCell();
+                    connectionsCell.classList.add('connection-cell');
+                    connectionsCell.textContent = process.connections;
+
+                    const md5Cell = row.insertCell();
+                    md5Cell.textContent = process.process_md5;
+
+                    const filesCell = row.insertCell();
+                    filesCell.textContent = process.files_accessed_str;
+
+                    const virusTotalCell = row.insertCell();
+                    virusTotalCell.textContent = process.virus_total_result;
+                }
+            }
+
+            function getProcessRowById(id) {
+                const table = document.getElementById('processTable');
+                const rows = table.getElementsByTagName('tbody')[0].rows;
+
+                for (let i = 0; i < rows.length; i++) {
+                    const idCell = rows[i].cells[0];
+
+                    if (idCell.textContent === id) {
+                        return rows[i];
+                    }
+                }
+            }
+
+            socket.on('new_data', (data) => {
+                data.process_info.forEach(process => {
+                    updateProcessCells(process);
+                });
+            });
+
+        });
+    </script>
+</body>
+</html>
