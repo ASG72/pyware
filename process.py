@@ -1,6 +1,7 @@
 import uuid
-from flask import Flask, render_template, jsonify
-from flask_socketio import SocketIO, emit
+from flask import Blueprint, render_template, jsonify
+from . import socketio
+from flask_socketio import emit
 import psutil
 import time
 import threading
@@ -8,12 +9,9 @@ import hashlib
 import os
 import requests
 
-app = Flask(__name__)
-app.config['SECRET_KEY'] = 'secret!'
-socketio = SocketIO(app)
+process_bp = Blueprint('process', __name__)
 
 process_info = []
-
 
 def gather_system_info():
     global process_info
@@ -22,10 +20,10 @@ def gather_system_info():
         for process in psutil.process_iter(attrs=['pid', 'name', 'cpu_percent', 'memory_percent', 'connections']):
             try:
                 pid = process.info['pid']
-                pid_bytes = str(pid).encode('utf-8')  # Convert pid to bytes using UTF-8 encoding
+                pid_bytes = str(pid).encode('utf-8')
                 pid_hash = hashlib.md5(pid_bytes).hexdigest()
                 if pid == 0:
-                    continue  # Skip the system idle process (pid=0)
+                    continue
                 name = process.info['name']
                 cpu_percent = process.info['cpu_percent']
                 memory_percent = process.info['memory_percent']
@@ -35,12 +33,8 @@ def gather_system_info():
                 if connections is not None:
                     for conn in connections:
                         connections_str += f"{conn}\n"
-# ---------------------------------------------------------------------------------------files_accessed-------------------
-                files_accessed = []
-                files_accessed_str = ', '.join(files_accessed)
 
-                process_md5 = None
-                
+                files_accessed = []
                 try:
                     for file in process.open_files():
                         files_accessed.append(file.path)
@@ -49,19 +43,18 @@ def gather_system_info():
 
                 files_accessed_str = ', '.join(files_accessed)
 
-                # Calculate MD5 checksum for the process executable file
+                process_md5 = None
                 try:
                     process_md5 = calculate_process_md5(pid)
                 except (FileNotFoundError, PermissionError):
                     pass
 
-                # Check VirusTotal for the hash
                 virus_total_result = None
                 if process_md5:
                     virus_total_result = get_virustotal_report(process_md5)
 
                 new_process_info.append({
-                    'id': pid_hash,  # Generate a unique ID for each process
+                    'id': pid_hash,
                     'pid': pid,
                     'name': name,
                     'cpu_percent': cpu_percent,
@@ -75,15 +68,9 @@ def gather_system_info():
             except psutil.NoSuchProcess:
                 pass
 
-            # Update the global process_info list with the new data
-            process_info = new_process_info
-
-            # Emit an event to the client with the new data
-            socketio.emit('new_data', {'process_info': process_info})
-
-            # time.sleep(2)
-
-
+        process_info = new_process_info
+        socketio.emit('new_data', {'process_info': process_info})
+        time.sleep(2)
 
 def calculate_process_md5(pid):
     process = psutil.Process(pid)
@@ -101,7 +88,7 @@ def calculate_process_md5(pid):
 
 def get_virustotal_report(resource):
     api_key = ''
-    if api_key =='':
+    if api_key == '':
         return 'API not given'
     else:
         url = f"https://www.virustotal.com/api/v3/files/{resource}"
@@ -122,16 +109,17 @@ def get_virustotal_report(resource):
         else:
             return 'N/A'
 
-@app.route('/')
+@process_bp.route('/')
 def index():
     return render_template('process.html')
+
 @socketio.on('connect')
 def handle_connect():
-    # Emit an event to the client with the initial data
     emit('new_data', {'process_info': process_info})
 
-if __name__ == '__main__':
+def start_gather_system_info():
     t = threading.Thread(target=gather_system_info)
     t.daemon = True
     t.start()
-    socketio.run(app)
+
+start_gather_system_info()
