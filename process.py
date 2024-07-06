@@ -9,7 +9,7 @@ import hashlib
 import os
 import requests
 
-process_bp = Blueprint('process', __name__)
+#process_bp = Blueprint('process', __name__)
 
 process_info = []
 
@@ -87,7 +87,7 @@ def calculate_process_md5(pid):
     return None
 
 def get_virustotal_report(resource):
-    api_key = ''
+    api_key = '' #enter api_key
     if api_key == '':
         return 'API not given'
     else:
