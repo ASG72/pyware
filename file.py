@@ -20,7 +20,8 @@ def calculate_md5(file_path):
             hasher.update(data)
     return hasher.hexdigest()
 
-def check_virustotal(md5_hash, api_key):
+def check_virustotal(md5_hash):
+    api_key='' #enter api_key
     if not api_key:
         return 'API key not provided'
     
