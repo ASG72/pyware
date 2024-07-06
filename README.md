@@ -25,10 +25,20 @@ pip install requets
 
 pip install psutils
 
+pip install hashlib
+
+pip install magic
+
+pip install threading
+
 cd watchtower
+
+python process.py
 
 python file.py
 
-python process.py
+#NOTES
+
+the 2 scripts should be run seperately on different ports , the combining of scripts will be updated soon.
 
 <In development>
