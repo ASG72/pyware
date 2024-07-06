@@ -24,7 +24,8 @@ pip install psutils
 
 cd watchtower
 
-python wtv5.py
+python file.py
 
+python process.py
 
 <In development>
