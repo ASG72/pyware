@@ -9,7 +9,7 @@ process.py - for checking processes
 # Installation
 git clone https://github.com/hatgrey2/watchtower.git
 
-pip install -r reuqirements.txt
+pip install -r requirements.txt
 
 cd watchtower
 
