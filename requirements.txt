@@ -1,0 +1,6 @@
+Flask
+flask-socketio
+requests
+psutil
+hashlib
+python-magic
