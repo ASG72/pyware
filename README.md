@@ -9,25 +9,7 @@ process.py - for checking processes
 # Installation
 git clone https://github.com/hatgrey2/watchtower.git
 
-require python libraries Flask, Flask-socketIO
-
-Conda-(Linux/windows)
-
-conda activate
-
-pip install flask
-
-pip install flask_socketio
-
-pip install requets
-
-pip install psutils
-
-pip install hashlib
-
-pip install magic
-
-pip install threading
+pip install -r reuqirements.txt
 
 cd watchtower
 
