@@ -11,6 +11,9 @@ Newly Added Offline detection for malware processes using CNN (Convolutional Neu
 file.py- for checking files 
 process.py - for checking processes
 
+# Pre-requisite 
+Install Visual C++ Redistributable
+packages 2015, 2017, and 2019-23. This is necessary for TensorFlow to work.
 
 # Installation
 git clone https://github.com/hatgrey2/watchtower.git
