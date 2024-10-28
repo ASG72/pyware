@@ -6,3 +6,4 @@ python-magic
 tensorflow
 numpy
 matplotlib
+pywin32
