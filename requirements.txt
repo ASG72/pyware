@@ -2,5 +2,6 @@ Flask
 flask-socketio
 requests
 psutil
-hashlib
 python-magic
+tensorflow
+numpy
