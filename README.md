@@ -1,5 +1,5 @@
 # Watchtower
-An open tool for system inpection using python. Users can check files being accessed on realtime by each processes.Auto checking process cheksums with virustotal api.
+An open tool for system inpection using python. Users can check files being accessed on realtime by each processes.Auto checking process cheksums with virustotal api and Offline CNN based model. 
 
 # Web GUI
 Currently web based gui is used to avoid gui lagging when showing chunks of data.
